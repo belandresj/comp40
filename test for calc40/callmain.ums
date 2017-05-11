@@ -1,0 +1,13 @@
+//      filename: callmain.ums
+//              by Yucheng He & Griffin Richards
+//	Contains the functions to call main
+
+// puts code in the init section,
+// which makes the initial call to main, then halts
+
+.section init
+.zero r0
+.temp r6,r7			
+start:
+	goto main linking r1
+	halt

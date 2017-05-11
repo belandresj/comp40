@@ -1,0 +1,8 @@
+Name: Yucheng He & Griffin Richards
+No significant acknowledgements
+Everything has been correctly implemented
+We change r3 be the value stack and sometimes we use r5 as temp register.
+We use recursion to implement the print module
+Time on analyzing: 3 hours
+Time on writing assembly code: 2.5 hours
+Time on debugging: 1 hour

@@ -1,0 +1,50 @@
+//      filename: printed.ums
+//              by Yucheng He & Griffin Richards 
+//      Contains a funciton called print for printing 
+//      Universal Machine words in decimal
+
+// r0 is always zero (points to segment 0, used for goto and for the call stack)
+// r1 is the return-address register and the result register 
+// r2 is the stack offset (into segment 0, which is addressed by r0)
+// r3 and r4 are nonvolatiles
+// r5 volatile register, helpful used for load return address
+// r6, r7 are volatile and are normally .temps (but up to each procedure)
+
+.section init                   // init section for print
+.zero r0
+.temp r6,r7
+
+.section text                   // text section for print
+print:
+        pop r5 off stack r2     // load parameter to print
+        push r1 on stack r2     // save return address
+        push r3 on stack r2     // save nonvolatiles
+        push r4 on stack r2     // save nonvolatiles
+
+        // handle negative number
+        if (r5 >=s 0) goto print_pos using r3
+
+print_neg:
+        output '-'              // output '-' 
+        r5 := - r5              // resign r5 be positive
+print_pos:
+        r3 := r5                // here r5 is always positive or 0
+        r4 := r3 / 10
+        // handle when  r5 is one digit number
+        if (r4 == 0) goto print_digit
+        push r4 on stack r2     // save the r4 as the new parameter for print
+        r1 := print_digit       // set return address is print_digit
+        goto print              // recursively call print
+
+print_digit:
+        r4 := r4 * 10           
+        r3 := r3 - r4           // here r3 is the rightest digit of parameter
+        output r3 + 48          // output in ASCII number (need to add 48)
+
+print_end:
+        pop r4 off stack r2     // load r4
+        pop r3 off stack r2     // load r3
+        pop r5 off stack r2     // load return address to r5
+        goto r5                 // return
+
+

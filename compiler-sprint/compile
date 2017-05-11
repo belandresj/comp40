@@ -1,0 +1,46 @@
+#!/bin/sh
+
+if [ -z "$CC" ]; then
+  CC=gcc
+fi
+
+CFLAGS="-I."
+LIBS="-lm"
+
+# these flags max out warnings and debug info
+FLAGS="-g -O -Wall -Wextra -Werror -Wfatal-errors -std=c99 -pedantic"
+
+rm -f *.o  # make sure no object files are left hanging around
+
+case $# in
+  0) set diagram.c ;; # compile just this file
+esac
+
+# compile each argument to a .o file
+for cfile 
+do
+  $CC $FLAGS $CFLAGS -c $cfile
+  rc=$?
+  stamp="[$cfile?$rc] $USER@$(hostname): $(date)"
+  echo $stamp >> .diagram-times
+  echo check $stamp | md5sum | sed 's/[- ]*$//' >> .diagram-times
+  if [ $rc -ne 0 ]; then
+    exit $rc
+  fi
+done
+
+
+$CC $FLAGS -o diagram diagram.o
+
+if [ -x diagram ]; then
+    if [ "$SUBMITTING40" != "yes" ]; then
+      echo "Congratulations!  Submitting" >&2
+      . /etc/profile
+      use comp40
+      submit40-lab-compiler-sprint
+    fi
+    exit 0
+else
+    echo "Something went wrong in the link phase!  NOT SUBMITTING" >&2
+	exit 1
+fi    

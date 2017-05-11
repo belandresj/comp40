@@ -1,0 +1,7 @@
+include com.tasm
+macro or
+
+com rt,p2               # not p2 in rt
+com p1,p3               # not p3 in p1
+nand p1,p1,rt           # not ((not p2) and (not p3)) will get p2 or p3
+mend    

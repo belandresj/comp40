@@ -1,0 +1,158 @@
+README for HW6
+Yucheng He and Griffin Richards
+
+
+Acknowlegements:
+As always we received help with bugs from the COMP 40 TAs
+
+All pieces of the assignment have been correctly implemented
+
+We departed from our design doc by removing the instructions.c module. We could
+find no efficient way to separate the instruction functions from the register
+array, which all the instructions need to use and must be maintained between
+instruction calls, and also from the memory. We eventually opted to incorporate
+the instruction functions outlined by the instruction.c module into the execute
+module. execute.c now manages/modifies the registers using the instructions 
+defined within, and manages the memory through the use of the memory module
+
+
+ARCHITECTURE OF THE INCLUDED UM SYSTEM
+Included modules:
+	um
+	load
+	execute
+	memory
+	segment
+
+Module descriptions:
+	um      -- um.c contains the main() function. It is the only module the
+	           client interacts with, and the usage is ./um <filename> on 
+		   the command line, where <filename> identifies a .um binary. 
+		   um.c uses load.c to load the file into a Segment_T program,
+		   defined in segment.c, and then executes that program using 
+		   execute.c
+
+	segment -- segment.c defines a type Segment_T which represents a
+		   memory segment, or a group of 32-bit instructions. Under
+		   the covers a Segment_T is a simplified Hanson's Seq_T, which
+		   manages typecasting the 32-bit instructions in order to
+		   store them in the Seq_T as 'void pointers.' 
+
+	load    -- load.c retrieves all of the instructions from the .um binary
+		   through the use of bitpack.c. It hides the secret of how
+		   these instructions are retrieved and packed. It also ensures 
+		   the content of the given .um is properly formatted. It 
+		   returns a Segment_T containing the program.
+
+	execute -- execute.c initializes a um memory (defined in memory.c)
+		   using a program segment created by load.c. It then executes
+		   the program's instructions. Execute maintains and hides the
+		   register array, and modifies/manages the registers and
+		   memory using instructions defined within
+ 
+	memory  -- memory.c defines a struct Mem which represents the memory,
+		   and provides functions for using a Mem to manage memory
+		   segments. It hides how (un)mapping segments and loading/
+		   storing segments is managed. In its abstractions inside the
+		   Mem it utilizes a Hanson's Seq_T and a Hanson's Stack_T
+
+
+EXECUTION TIME FOR 50 MILLION INSTRUCTIONS
+Using a counter inside the UM, we found that there are ~85 million instructions
+in the provided midmark.um test. We then deleted the instruction counter, and 
+using the time function in the command line we found that our UM takes 4.026
+seconds to execute midmark.um. Therefore it would take ~2.3 seconds to execute
+50 million instructions. 
+
+
+UM UNIT TESTS
+*NOTE there is /n at the end of the output for any tests which have output
+halt.um         -- tests the halt instruction (7) by first attempting a halt.
+		   If the halt is successful, no output is produced. If the
+	           halt is unsuccessful, the following instructions print
+		   'Bad!' to stdout. **The first 3 tests (halt,loadval, output)
+		   are all mutually dependent. If for example loadval does not
+		   work, it may not print 'Bad!'. In many cases for failure of
+		   one of these 3, the program would likely segfault or assert.
+
+loadval.um	-- tests the load value instruction (13). If there were a test
+		   written for the output instruction (10) it would be
+		   identical to this one, so it essentially tests both. It
+		   loads the character 'T' into a register and then attempts
+		   an output of that register. If the loadval and output were
+		   successful, the outputted character will be 'T'. Otherwise
+		   the loadval or output was unsuccessful.
+
+goto.um		-- tests the load program instruction (12). The goto test 
+		   loads the value 0 into a register, and then attempts to
+		   load a program into that location. This should change the
+		   program counter. If successful, the output will be "GOTO
+		   passed", and if unsuccessful the output will be "GOTO
+		   failed".
+
+input.um	-- tests the input instruction (11). It loads a character from
+		   stdin into a register and then attempts an output of that
+		   register. If the input was successful, the outputted
+		   character will be the same as the input character.
+		   Otherwise the input was unsuccessful.
+
+add.um		-- tests the addition instruction (3). It loads a character
+	    	   from stdin in a register and then attempts to add one to
+		   the value in that register. It then outputs the result. 
+   		   If the add was successful, the outputted character will be
+		   the character one higher in ascii than the input.
+
+mul.um		-- tests the multiplication instruction (4). It loads the
+		   character '1' into a register and attempts to multiply
+		   that value by 2. It then outputs the result. If the multiply
+		   was successful, the output should be 'b'.
+
+div.um		-- tests the division instruction (5). It loads the
+		   character 'b' into a register and attempts to divide
+		   that value by 2. It then outputs the result. If the divide
+		   was successful, the output should be '1'.
+
+nand.um		-- tests the bitwise NAND instruction (6). It loads '1' and '2'
+		   into registers and then attempts a bitwise NAND on them, and
+		   then attempts a bitwise NAND between the result and itself.
+		   It then outputs the result of the second NAND. If successful
+		   the result should be 0.
+
+cmove.um	-- tests the conditional move instruction (0). It loads 0 'a'
+		   and 'b' into registers, and attempts a move with the 0 as
+		   the conditional, 'a' as the value and 'b' as the destination
+		   It then outputs the register which contained 'b', and it
+		   should still be 'b'. It then attempts a move with 'a' as the
+		   conditional, and the same value and destination as before.
+		   The register which contained b should now contain a. If the
+		   whole test is successful the output will be b, newline, a.
+
+segLoadStore.um -- tests the segmented load (1) and segmented store (2)
+		   instructions. It loads the character 'T' into a register
+		   and stores that register into the location 0,0. It then
+		   attempts a load on that same location and outputs the
+		   result. If successful, the output should be 'T'. 
+
+mapSegment.um	-- tests the map segment instruction (8). It attempts to map 
+		   a new segment with length 10 at location 1. The newly mapped
+		   segment is all 0's. It then adds '1' to the value at
+		   location 1,9 in memory, and outputs that value. 
+		   If successful, the output should be '1'.
+		   
+
+unmapSegment.um -- tests the unmap segment instruction (9). It maps a new
+		   segment with length 10 at location 1, and changes the value
+		   at location 1,9 to 10. It then attempts to unmap the segment
+		   at location 1. It then maps a new segment at location 1, and
+		   outputs the value at location 1,9 + '1'. If successful the
+		   output should be '1'.
+
+
+TIME SPENT
+Analyzing the assignment: ~ 2 hours
+Preparing the design    : ~ 5 hours
+Solving the problems	: ~ 7 hours
+Total			: ~ 14 hours			
+
+
+	

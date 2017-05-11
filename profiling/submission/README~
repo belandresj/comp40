@@ -1,0 +1,16 @@
+Yucheng He & Griffin Richards
+
+Acknowledgements: Received help from the Comp 40 TAs
+
+
+Most Time-consuming Routine
+The most time-consuming routine is map_segment, which makes heavy use of both 
+malloc and free. Looking at the assembly code for this area, we could find no
+further way to improve the routine
+
+If the test um code include lot of map and unmap segment, we can change the 
+map and unmap segment instrctions into inline, this will improve
+
+Hours spent analyzing: 1h
+Hours spent solving:   3h
+

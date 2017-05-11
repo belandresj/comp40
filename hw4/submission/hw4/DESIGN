@@ -1,0 +1,229 @@
+Will Dolan, Yucheng He
+10/13/2015
+Assignment 4: Image Compression
+
+
+-----------------------------Part A Design-------------------------------------
+Our solution to the first problem, speaking generally, is a program that takes
+in a PPM image and returns a binary image file that has been compressed to 
+approximately three times smaller the size. The program will also do this 
+function in reverse, going from a compressed image to an uncompressed image.
+
+The input of the compression function will be a Pnm_ppm type, which contains 
+structs of RGB values. The output of this function will be a struct which
+contains width, height, denominator for scaling, as well as a UArray2 of 
+bitpacks which contain the words the RGB values have been converted into.
+It is worth noting that the width and the height will be half of what they
+were as input, as we are compressing 2x2 pixels into bitpacks.
+
+The major components of this function will be the main file, compress40, and
+several helper files, bit_conversion and arith40.
+
+The "main" function of compress40 will  determine whether it is a compression
+or decompression being conducted. 
+
+Then, two functions, compress40 and decompress40 will carry out the proper 
+method.
+
+For compression, this begins with processing the Pnm_ppm struct. We will first
+trim the edges so that the width and height are even. Then we convert each RGb
+pixel in the PPM array into floats. The floats are then converted to the 
+Y/Pb/Pr format using the supplied arithmetic and matrix methods. 
+We will be storing the Y/Rb/Rg values in their own struct.
+Then, this struct is passed to bit_conversion.
+
+For compression, we read in the bitpack containing all the information we need
+to decompress, and break the bitpack up into six words (each containing 
+something needed for decompression), and pass those words to the proper
+decompression function in bit_conversion.
+
+The bit_conversion file changes all the Y/Pb/Pr structs to 4, 5 or 9 bits.
+For decompression, it will conversely change the 4, 5 or 9 bit integers into 
+floats. Here are some examples of files in the bit_conversion program:
+
+signed float_to_5bit(float cos_y)
+This would convert a float to a series of 5 bits, which is how the
+b, c, and d values between -0.3 and 0.3 will be stored in the final 32 bit
+representation. It will map the value to an approximate discrete
+value that lies in the same domain. The function will return an signed
+integer, which indicates the value between -0.3 and 0.3 that is closest
+to the float. We will divide by 0.02 and then cast the result as an int,
+which will give the discrete value of the interval 0.02 between -0.3 and 0.3
+which is most approximate to the float.
+
+The array used to store the approximation valeus will be 32 values long,
+ranging from -0.3 to 0.3 by an interval of 0.02.
+
+float 5bit_to_float(unsigned 5bits)
+This function will do the exact opposite. It will convert a 5bit vector to a
+float value that can then be stored back into an RGB struct when using the
+inverse of the b,c and d calculation functions from earlier. The arithmetic
+behind this is multiplying the 5 bit integer by 0.02 to get a float that
+should be approximately similar to the previously compressed float.
+
+Couples of functions like this will be used to test the code throughout 
+development. For each conversion there is a corresponding inverse, 
+and as we write the programs we will compress and
+subsequently decompress the files.
+
+Other functions:
+unsigned int float_to_9bit(float cos_y)
+This function will take a float from the RGB struct and return an integer
+representing its value. We will take in a float between 0 and 1. We have
+9 bits to store this number, so we can use 0.002 as the precision interval.
+Essentially this function will multiply the value between 0 and 1 by 511, which
+will return the integer to be stored in the 9 bit package.
+
+float 9bit_to_float(unsigned int 9bits)
+In decompression, the reverse will happen, where we will divide the integer
+between 0-511 by 511 to determine what the float to convert the image back to
+RGB would be.
+
+The supplied "Arith_index_of_chroma" conversion function also does a similar
+utility, which perfroms artihmetic on the float to determine which
+approximation stored in an array ought to be used. The unsigned integer
+that this function returns will be the index of the array.
+
+The array for values in the domain of -0.5,0.5 (for Pb and Pr)
+[+/-0.35, +/-0.20, +/-0.15, +/-0.10, +/-0.077, +/-0.055, +/-0.033, +/-0.011]
+
+The floats supplied for each function must fall in 
+the given domain. If this is untrue, then the maximum value in each 
+approximation will be used and the compression won't be effective.
+
+Testing will be done in multiple steps. For each float to bit series 
+method, we will do a series of tests to ensure they work properly. For
+example, in the Pb and Pr calculations, we input a float between -0.5
+and 0.5. We will find out which approximation in the array is closest to
+the value, and then print that value immediately to make sure it is the
+correct one. We can then print the corresponding index in the array, to
+make sure that it is being indexed correctly, and then that will be the
+return value of the function.
+For example, if the float is -.25, then the proper approximation should
+be -.20. The index of -.2 in the array of approximations is 1, so the
+function should return 1.
+In the corresponding decompression function, the index of one will be
+interpreted as -.2, and this is the value that will be returned/
+
+For generating 5 bit from float, we will do a similar method, where we
+divide the float which is between -0.3 and 0.3 by 0.02. 
+Then we figure what multiple of 0.02 is closest to this value. In terms
+of testing, these are the first things we will do. We will divide by 0.2
+to ensure our arithmetic is correct, print, and then determine the correct
+approximation and print. The value we return in this function is the value
+between -15 and 15 that represents the approximation.
+In decompression we will take this value and multiply it by 0.02 to get a
+float between -.3, .3 which is approximately the float that has been compressed
+
+The 9 bit conversion is almost identical to the 5 bit conversion. The
+compression function will be passed a float between 0,1, and will multiply this
+number by 511. This will return an unsigned integer between 0,511 representing
+the float as an integer.
+The decompression function will take this integer and divide by 511, which will
+return a float between 0,1 approximate to the value passed into the compression
+function.
+
+Generally, we can easily test to see the output by printing the bit series
+to stdout and make sure that the values are being properly converted.
+From there, we can apply those binary sets to the array of approximation
+values and check to see that we are properly approximating everything.
+We will be doing these tests in reverse, also. We'll feed an integer
+to one of the bitset_to_float functions, and check to make sure that
+we are properly extracting and converting the values by printing to stdout.
+Then, once we have the components made, we can test them in conjunction,
+where we feed the return value of a compression function to a decompression
+function, and hopefully the result will be a value that is close to the 
+original, but slightly less precise.
+
+We will be using test cases of different size, empty files, images of length
+1 or 0, and other unexpected inputs to make sure we handle degenerate cases.
+
+With part C in consideration, if the length of the codeword were to be
+changed, which is a reasonable expectation, hopefully all we would have to
+do is expand or contract the number of bits for each component of the 32 bit
+word, which would translate to changing the length of the approximation arrays
+or changing the precision interval to be more or less precise than the original
+Furthermore because we are storing the 9bit values in bit series greater than
+the amount of bits (i.e. we're storing 9 bits in a 32 bit type), hopefully
+all we would need to do would be change the size of the cast or shift to 
+retrieve the new set of bits of greater or less length.
+
+There are several places where information may be lost. The first is the first
+step in the process, trimming the width and height to be even numbers. This 
+could lose a row or column of pixels. Then, taking the average of the Pb and Pr
+values of each pixel in the four pixel block will lose accuracy for the pixel
+block as a whole. The biggest loss of information will likely be the
+approximations that happen for each float stored as a series of bits. We have
+to approximate each float, and in doing so, we lose accuracy to the original
+pixel RGB values.
+
+
+
+-----------------------------Part B Design-------------------------------------
+The bitPack program will carry out various actions on 64 bit "words."
+Here, a word is meant to represent a contiguous series of bits.
+The functions entail creating a new word, extracting a word from
+a 4 byte integer, and performing a check on a number to see whether
+it would fit in the given amount of space.
+
+There will be one of each of these functions for signed integers and
+one of each for unsigned integers, which may return different values
+depending on the input.
+
+The new function will create a new word, identical to a word passed
+in via the "word" parameter. It will then modify the word by utilizing
+a mask to examine the bits that will be modified and the the >> or << 
+operators to access the individual bits and change their value or not.
+
+The get function will similarly create a mask to access the proper bits
+in the original word, where the bits to be accessed in the mask are 1s
+and the rest are 0s. Then the sub-word will be accessed using the <<
+and >> operators after a bitwise check to get the series of bits.
+
+The "fitsu" and "fitss" functions will check to see whether the 
+given value can be stored in a given width of bits. This will be done by
+converting a binary number with width defined by the parameter and full of 1s
+to decimal, and seeing whether the given value is less than this number. 
+If it is, then the given value is in the correct domain, if it is not, then 
+the value is greater than the maximum possible number with the set width, 
+and it cannot be stored in this representation.
+
+We will have to use tests extensively to make sure that we are doing the
+correct conversions and modifications. On a fundamental level, we will
+first simply print the return values of our functions, in bitwise and
+decimal notation, and check by hand to see that our conversions are
+corrent. Then, to see that we are correctly passing the data in the uint64_t
+data type, we will use the functions in conjunction with each other. Thus,
+if a given word is able to be stored, then it should be passed from the
+"fit" functions, to the "new" functions, and then the "get" functions with
+consistent results. 
+
+A test of the format
+Bitpack_getu(Bitpack_newu(word, width, lsb, value), width, lsb) == value
+should check whether we are correctly converting and deconverting the
+decimals to bianries to subwords in the aggregate word.
+An example of one of the "fit" functions would be as follows:
+Bitpack_fitsu(100, 7) == true
+Here, 2^7 = 128, and since 100 is less than 128, it fits in the domain 
+and the function returns true.
+Conversely,
+Bitpack_fitss(100, 7) == false
+Here, because the function is checking to see whether the value can be
+stored in a signed integer, the domain for validity is -128/2, 128/2 -1, or
+-64, 63. The value 100 is greater than 63, so it definitely cannot be stored
+in a signed representation of an integer with width 7.
+
+Some miscellaneous tests we can conduct would be to feed the fit functions
+values that cannot be stored in the integer type (ex. greater than the ~2.1
+billion value that can be stored in uint64_t types.),supplying a width of zero
+which should return 0, or a negative width which should result in a CRE.
+
+In the get and new functions, it will be helpful to print the input and output
+as decimal and binary representations at every step of the way. Thus we will
+need functions to convert from hex to binary (probably in the form of a char[]
+with all the possible hex to binary or decimal to binary 
+conversions [0x0b -> 0000 1011] or [11-> 0000 1011] where the binary forms
+are just character arrays). With this we will be able to easily test whether
+our shifts are shifting the correct bits to the correct places.
+
+

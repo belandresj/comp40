@@ -1,0 +1,12 @@
+halt.um
+goto.um
+loadval.um
+input.um
+add.um
+mul.um
+div.um
+nand.um
+cmove.um
+segLoadStore.um
+mapSegment.um
+unmapSegment.um

@@ -1,0 +1,116 @@
+Name:                Jun Wang & Yucheng He
+Assignment number:   Homework 3
+Submit Date:         10/09/2015
+-----------------------------------------------------------------------------
+PART A:
+In part a, we use a uarray2 of uarray to repreasant the structure of uarray2b.
+Each block is a uarray and, we have a uarray2 to carray the array of blocks, 
+(which is carray the pointer pointing to uarray). For the padding, it will be 
+checked by maping function, and the indices we call will not cover the padding.
+We implement all the functions needed. We use the uarray2.c and uarray2.h by 
+our formal assignments.
+
+Part B
+For Part B, we write the source file of a2plain.c like a2blocked.c. The main
+differences between these two files are the map functions we implemented in
+a2plain.c were totally different with that in a2blocked.c, because they need
+different types of mapping methods(row major, column major for a2plain.c and
+block major for a2blocked.c). 
+
+Part C
+For Part C, we split our code into three different files. 
+The ppmtrans.c file contains the main function inluding the reading and
+exporting files, calling different rotation functions, etc. 
+The ppmtrans_helper.c file contains all the different types of the rotation
+functions like rotation0, rotation 90, etc.
+The ppmtrans_helper.h file contains the declaration of all rotation functions
+and the closure struct named a2fun_closure containg two objects: methods and 
+the new array2 for storing the new image's information.
+
+What we have implemented?
+We implemented the rotation for 0, 90, 180, 270 degrees and the result 
+indicates that the program works very well.
+
+What we didn't implement?
+We didn't implement the transformation for fliping or transposing the images.
+
+
+PART E:
+
+Our estimate:
+		row			col			block
+---------------------------------------------
+180		2			5			4		
+---------------------------------------------
+90		4			5			3
+
+For small image: 48*49
+		row			col			block
+---------------------------------------------
+180		7.63ms		7.60ms		10.78ms			
+---------------------------------------------
+90		7.04ms		7.07ms		10.30ms
+
+For mid image: 458*816
+		row			col			block
+---------------------------------------------
+180		505.77ms	505.26ms	700.99ms				
+---------------------------------------------
+90		438.53ms	439.78ms	637.56ms
+
+For small and mid image, there is no large different between row and col, which
+is quite different from what we estimate. I think this is because the image 
+size is smaller than the cache, so for three kinds of map functions, the 
+hit miss is quite low. So the algorithm will detemine the runtime. Based on 
+our estimate, the row and col have the same algorithm complexity, and block
+is much more complicated. So from the results for small and mid images, we can 
+find the runtime of row and col are similar and the block takes more time.
+Another factor of the result is, 180 rotation has 2 more multiply/divides than 
+90 rotation has. So this may be the reason why 90 rotation is faster than 180
+rotation.
+
+For large image: 8160*6120
+		row			col			block
+---------------------------------------------
+180		1956.11ms	2681.38ms	3773.73ms					
+---------------------------------------------
+90		1750.62ms	2305.95ms	3297.73ms
+
+First compare the effect of different rotaiton degree with the same mapping 
+function:
+For the large image, we find the result of block-map is same as our estimate.
+The hit miss of block-map should be always the same for different rotaitons.
+While the 180 rotation has more complicated algorithm than 90 rotation, so 
+the result shows that 180-block is a bit lager than 90-block. 
+For col-major, same as block-major, 180-rotation is more complicated than 
+90-rotation. And the spatial locality of 180-rotation in col-major is worse
+than 90-rotaion. So the results shows 180-col taks more time than 90-col.
+For row-major, the result is quite different from what we estimate. The reason
+maybe: first 180 is more comlicated, while 90-rotation in row-major has worse
+locality than 180-rotaiton. Since the we thought the locality will denominate 
+runtime, but the results indecated that the operation complixity in each 
+algorithm will denominate the results.
+Then compare the effects of the mapping function with the same rotation degree:
+From the results, we found row-major has the best runtime while the block major 
+has the worst runtime. The reason we thought is because of the block-major has
+much more operations in mapping than row and col. while col-major has two more
+operations than row-major. So the difference between row and col are smaller 
+than the difference between col and block.
+
+Time for one cell (total runtime / # of cells) for small image
+		row			col			block
+---------------------------------------------
+180							
+---------------------------------------------
+90		
+
+Time for one cell (total runtime / # of cells) for small image
+		row			col			block
+---------------------------------------------
+180			
+---------------------------------------------
+90		
+
+
+For this assignment, we use 20 hours.
+

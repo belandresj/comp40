@@ -1,0 +1,41 @@
+TECHNIQUE
+
+When programming, bug concerning memory issue is a usual case. Thus, it is 
+necessary to get familiar about different approaches when debugging for
+memory issues like memory leak, double free, etc.
+
+During the practice in comp40, according to the advice from Professor 
+Mendelson, we found it is a very efficient way to print the pointer or the
+address of the variables for debugging.
+
+Here are two examples we experienced when using this technique to find the bug
+with memory issues. 
+
+First, we have some memory leak in the program. Though, through valgrind, we
+find which part of the code may cause the memory leak. But, we cannot find
+the reason causing the memory leak. Thus, we test the result with a very simple
+testing files and print all the pointers when they are allocated with memory 
+and when their memory is freed. Through checking the address of these memory,
+we found that some memory is not freed during the program, and we find the 
+reason causing the memory leak in the code. Thus, we edit the code and the
+program never caused memory leak in the future testing.
+
+
+Second, our program will cause double free memory every time when removing the
+blackedge pixels. And it was very hard for us to find where the bug was.
+Through printing flags in the program, through we could find which function 
+might have bugs, we could't find the reason to cause the double memory. Thus,
+we print the pointers every time when allocating the memory and freeing the 
+memory with small test case. 
+
+We found that all the memory which were allocated to store the information for
+the pixels at the edge of the image was freed two times. Thus, we guessed that
+the pointers pointing to the memory for the pixels at the edge of the image
+might be pushed into the sequence two times. Thus, we checked the code for
+pushing the pointers of the pixels at the edge of the images into the sequence 
+and we found that all these pointers were pushed into the sequence two times in
+fact. Thus, finally, we solved this issue.
+
+According to the experience of these two times of the homework, we believed 
+that printing the pointers would be a very good choise when got stucked during
+the debug with memory issues.

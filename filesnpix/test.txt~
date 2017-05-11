@@ -1,0 +1,24 @@
+  hello world     hello world
+hello world      hello world
+document is
+paper.tex
+; it is a moderately complicated L
+A
+T
+E
+X source file; for a
+much
+simpler
+example, see
+hello-world.tex
+.
+There are several ways to convert a L
+A
+T
+E
+X source file (such as
+hello-world.tex
+) into a
+typeset document. The standard method (on a Unix system) is to type the shell command:
+latex hello-world
+This produces

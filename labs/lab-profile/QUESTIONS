@@ -1,0 +1,41 @@
+UNBLACKEDGES
+
+Please put answers to questions here.
+
+  * What fraction of time is spent in I/O as compared with removing
+    black edges?
+
+  remove_black_edges takes  39.90%
+  input: pbmread takes      34.28%
+  output: pbmwrite takes    25.79%
+
+  * How long does
+   
+       time ./unblackedges 
+  
+    take?
+    0.49      user 
+    0.00      system 
+    0:00.53   elapsed 
+    94%        CPU
+  
+  * After making changes requested in the lab handout (steps 1-4), what
+    happened to the total time?
+
+    0.49      user 
+    0.00      system 
+    0:00.52   elapsed 
+    93%        CPU
+  
+  * What happened to the fraction of time spent in Bit_put?
+
+  unblackedges-bfs: 10.23%
+  unblackedges:     10.18%
+  
+  * Since the implementation of Bit_put has not been improved, what has
+    changed?
+	Since we changed something the fraction of time spent for that
+	part will be changed. As a result, other parts' time spent fraction
+	of the program will be changed. This is the reason why we not
+	change Bit_put, but the Bit_put time fraction changed.
+  

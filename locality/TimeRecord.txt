@@ -1,0 +1,15 @@
+Mapping = -col-major, Rotation = 180, Time: 508871574.000000 
+Number of pixels = 373728, average time per pixel = 1361.609443 
+ 
+Rotation = 90, Time: 13345854.000000 
+Number of pixels = 373728, average time per pixel = 35.710073 
+ 
+Mapping = -col-major, Rotation = 180, Time: 507336735.000000 
+Number of pixels = 373728, average time per pixel = 1357.502609 
+ 
+Rotation = 90, Time: 15691395.000000 
+Number of pixels = 373728, average time per pixel = 41.986137 
+ 
+Rotation = 90, Time: 13055368.000000 
+Number of pixels = 373728, average time per pixel = 34.932807 
+ 

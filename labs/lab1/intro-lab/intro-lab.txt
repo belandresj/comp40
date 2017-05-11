@@ -1,0 +1,75 @@
+               COMP 40 Lab: Naming brightness functions
+                             (for pairs)
+
+
+Partner's:
+
+Partner 1:  Name____Yucheng He  ______    Login ____yhe01________
+
+Partner 2:  Name___Jun wang___________    Login ____jwang09________
+
+Partner 3:  Name______________    Login ____________ (if any)
+
+
+This file goes with part 8 of the first lab.  The idea is to give you
+some practice thinking about the names of functions.  The problem is a
+simple one, so we're going the software equivalent of shooting a fly
+with an elephant gun, but because the problem is so simple, it makes
+it easy to have a short practice session.
+
+Here is the problem:
+
+  - Suggest three different functions that might be useful in
+    implementing `brightness`.
+
+  - For each function, suggest three possible names.
+
+  - For each function, say which name you think is most appropriate
+    and *why*.
+
+
+
+Function #1:
+
+  Job: Calculate the brightness of image
+
+  Candidate names: brightnessCal, calculator, brightness
+
+  Best name: brightnessCal
+
+  Why the given name is the best:
+ It covers the function job and it is not too long to write.
+
+
+
+
+
+Function #2:
+
+  Job: Extract the data from the image for calculation
+
+  Candidate names: readImage, convertImage, getImage
+
+  Best name:readImage
+
+  Why the given name is the best: 
+It is easy to remember and cover the function's Job
+
+
+
+
+
+Function #3:
+
+  Job: check the number of the files and open the correct file.
+
+  Candidate names: openFile, checkFile, check_openFile
+
+  Best name:check_openFile
+
+  Why the given name is the best: 
+It includes all the neccesory operations for checking the input 
+file name, and opening the file.
+
+
+

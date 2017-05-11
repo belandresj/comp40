@@ -1,0 +1,149 @@
+DESIGN FOR HW6 
+by Yucheng He and Griffin Richards
+
+Files included with submission:
+DESIGN
+memory.h
+segment.h
+test.c
+
+MAJOR COMPONENTS OF THE PROGRAM AND THEIR INTERFACES
+
+        There are 6 major components to the program
+                - um.c 
+                          contains the main function which takes a .ums file
+                          and uses load.c to load the file, then uses execute.c
+                          to execute the loaded instructions                                
+                - load.c/.h
+                          uses bitpack to convert the binary in the .ums file 
+                          to a Segment_T (defined in segment.c), which 
+                          represents the segment containing the program 
+                - execute.c/.h
+                          intializes a um memory (defined in memory.c) using a
+                          program segment created by load.c. Then executes the
+                          program's instructions (defined in instruction.c)
+                - instructions.c/.h 
+                          defines all 14 instructions to be used by execute.c
+                - memory.c/.h
+                          defines a Mem struct and provides functions for using
+                          a Mem to manage memory segments
+                - segment.c/.h
+                          defines a type Segment_T which represents a memory
+                          segment, a sequence of 32-bit instructions
+
+
+OVERALL ARCHITECTURE AND MODULE INTERACTIONS
+        um.c gets a file pointer from the command line and loads this file 
+        pointer using load.c
+                load.c uses bitpack.c to convert the binary in a given file to
+                a Segment_T and returns this segment
+        um.c passes the Segment_T returned by load.c to execute.c
+                execute.c takes a Segment_T containing the program to be 
+                executed, and passes this to new_mem() in memory.c 
+                        memory.c initializes and returns a new Mem using the
+                        given Segment_T program
+                execute.c uses bitpack.c to unpack the next instruction to be 
+                executed
+                execute.c then uses instructions.c to execute the unpacked
+                instruction, and - depending on the instruction - may pass
+                it the Mem it created
+                        instruction.c has source code for each instruction,
+                        and may use functions defined in memory.c depending 
+                        on the instruction
+                execute.c will modify/update the register array as it executes
+                each instruction
+        Segment_T is a defined type and will be used by all the modules. um.c
+        only uses it to pass from load to execute.
+        
+
+DATA STRUCTURES
+
+segment.c/.h
+        - A Segment_T is a Hanson's Seq_T of uint32_t instructions. It contains
+          fewer functions than a Seq_T and saves the client the trouble of
+          extra typecasting, since the returned types will be consistent
+          instead of a void* as it is in the Seq_T
+memory.c/.h
+        - The main memory is represented as a struct called Mem
+                This struct contains 3 main components
+                - A Hanson's Seq_T segs, which is a sequence of Segment_T's. 
+                  segs represents the list of mapped segments
+                - A Hanson's Stack_T unmapped, which is a stack of uint32_t's.
+                  unmapped represents a list of indices at which there are
+                  segments that have been unmapped. These segments are 'dirty'
+                  because they are only overwritten when a new segment is being
+                  mapped 
+                - An uint32_t prog_counter which represents the index of the
+                  current instruction so that the index of the next instruction
+                  to be executed is also known
+execute.c/.h
+        - Maintains a global array of size 8 which represents the registers
+
+
+Invariants of segment representations:
+        - If we want to map a segment, we first check the unmapped stack, and:
+                - If it is empty, this indicates that there are no 'dirty' 
+                  unmapped segments in segs. We then map a new segment and add
+                  it to segs.  
+                - If it is not empty, this indicates there are are 'dirty' 
+                  unmapped segments in the mem Seq_T. We then pop one element
+                  off the unmapped stack (which is an index of one of these
+                  dirty unmapped segments) and map the segment into that 
+                  location in segs with the put function. The put function 
+                  returns a pointer to a segment which has already been
+                  unmapped, and we free that segment
+        - If we want to unmap a segment, we push the index of that segment onto
+          the unmapped stack
+        - If you use seg_put() on a specific index and then seg_get() on the
+          same location, the result should be the same as the input
+        - The prog_counter's initial value is 0, and always represents the
+          index of the instruction currently being executed. prog_counter
+          is only incremented when another instruction is received
+        - The unmapped stack is initally empty
+        - The segs sequence initially only contains segment 0
+
+
+TESTING
+
+File included with submission:
+test.c
+        This file contains a main and four functions which will test the
+        memory.c module, and by extension the segment.c module
+                Each test begins by printing which test is being run, so that
+                if any of the asserts within the test function fail, we will 
+                know which function failed. It then creates a new test program
+                Segment_T and loads it into a new Mem using the new_mem()
+                function. Each test finishes by freeing the segment and Mem
+                before returning                
+                - test_new_mem()
+                        This tests the new_mem() function by loading the test
+                        program Segment_T into new_mem() and checking to see if
+                        the length of segs is 1, indicating that segment 0 has
+                        been mapped, if the unmapped stack is empty, which 
+                        indicates no segments have been unmapped, and that
+                        prog_counter is 0, which means we are beginning with
+                        the first instruction
+                - test_map_segment()
+                        This tests the map_segment() function by mapping a
+                        segment of a particular length, and then checking to
+                        see if the length of the segment mapped is the same
+                - test_unmap_segment()
+                        This tests the unmap_segment() function by unmapping a
+                        mapped segment and checking to see if the unmapped
+                        stack is non-empty afterwards
+                - test_loadAndStore_segment() 
+                        This tests the load_segment() and store_segment()
+                        functions by first storing a particular uint32_t into
+                        a specific location in a segment in Mem using
+                        store_segment(), and then retrieves the uint32_t at
+                        that specific location using load_segment(), and then
+                        compares the result to what was originally stored to
+                        make sure they are the same
+                - valgrind
+                        To test that that the mem_free() function, which was
+                        used in each test, successfully freed the allocated
+                        Mems, we will run valgrind after executing the test
+                        file
+
+
+        

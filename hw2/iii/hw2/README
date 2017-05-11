@@ -1,0 +1,158 @@
+Name:                Jun Wang & Yucheng He
+Assignment number:   Homework 2
+Submit Date:         9/28/2015
+-----------------------------------------------------------------------------
+What has been correctly implemented?
+
+In part A&C, we utilized the uarray to implement the 2D UArray2. In uarray 
+there is only one index, but in uarray2, there are two indices i and j.
+We convert these two indices to one index, then we can use uarray functions
+to do what we want to do. This is our main idea how to create an UArray2 from
+UArray.
+In part C:sudoku, we implement three map functions in three different orders,(
+row_major, col_major and block_major) to check every row, col or block has the
+same number. Then we implement the apply functions for them. The most important
+one part is how to create a structure to check the same numbers in one row, col
+ or block. We used a 9 length uarray to store the times appears for each number
+1-9. Then we can use it to determine whether it has same numbers or not.
+
+In part B&D, we utilized the bit vector to store the value and utilize
+the relationship of the indice between the 1-d and 2-d bit array to reach
+the correct element stored in the 2-d bit array. 
+In the 2-d bit array (bit2), we can construct a new bit2 array and free the 
+memory which has been allocated for the bit2 array. Through the Bit2_width 
+and Bit2_height function, we can get the value of the width and the height 
+value of the bit2 array. The Bit2_get and Bit2_put function can get or change
+the value of the element in the bit2 array according to the indices. The map
+function for the bit2 array can be used to call the function to map all
+the elements in the bit2 array by row major or column major.
+For unblackedge project, a program named unblackedges was built which can read
+the pbm image and remove all the blackedge pixels by checking the value
+of the pixels stored in the bit2 array.
+The basic idea for unblackedges program, is to set the black pixels at the edge
+of the pbm image as the root for a tree structure, and utilize a stack to
+traverse the whole tree which is composed by the black pixels which is
+connected to the root. The connection here means that from these pixels, we can
+reach the root through the neighboring black pixels. Based on this algorithm, 
+we build the program named unblackedges, and the program can remove the black
+edge of the pbm images very well according to the test with Khan.pbm, 
+Hyphen.pbm, and Shakespear.pbm.
+
+-----------------------------------------------------------------------------
+What has not been implemented
+
+Since we utilize the tree structure to find all the blackedge pixels and remove
+these pixels, it is not necessary to analzye the pixels of the pbm image one
+by one through the mapping function. Thus, we didn't use the mapping function
+for removing the blackedge pixels.
+
+-----------------------------------------------------------------------------
+The critical part of the design checklist
+
+For UArray2:
+We are going to use 1-d uarray to represent the 2-d uarray2, in which each 
+element can be defined later.In the corresponding struct, there are several 
+items to represent a complete 2-d uarray2. They are:
+
+struct UArray2_T {
+	int width;      /* number of elements in one row, at least 0 */
+	int height;     /* number of elements in one column, at least 0 */
+	UArray_T uarray /* the 1D UArray to represant the 2D UArray2 */
+};
+
+The functions we want are:
+UArray2_T UArray2_new (int width, int height, int size):
+This function will be used to create a 2-d array (UArray2), named uarray2 
+for future implementation.
+
+void UArray2_free (UArray2_T* uarray2P)
+This function can free the memory allocated for uarray2.
+
+int UArray2_width (UArray2_T uarray2)
+This function can return the value of the width of the uarray2.
+
+int UArray2_height (UArray2_T uarray2)
+This function can return the value of the height of the uarray2.
+
+int UArray2_size (UArray2_T uarray2)
+This function can return the size of the elements in the uarray2.
+
+void *UArray_at (UArray2_T uarray2, int i, int j)
+This function can return the pointer to the corresponding entry in the 
+uarray2 according to the index (i, j), and the return type is depended
+ on the type of elements.
+
+void UArray2_map_row_major (UArray2_T uarray2, void apply(int i, int j,
+			 UArray2_T uarray2, void *val, void *cl), void *cl)
+This function calls the apply function for each entry in the uarray2 and 
+the column indices change faster than row indices (row major).
+
+void UArray2_map_col_major (UArray2_T uarray2, void apply(int i, int j, 
+			UArray2_T uarray2, void *p1, void *p2), void *p2)
+This function calls the apply function for each entry in the uarray2 and 
+the row indices change faster than column indices (column major).
+
+void UArray2_map_block_major (UArray2_T uarray2, void apply(int i, int j, 
+			UArray2_T uarray2, void *p1, void *p2), void *p2)
+This function calls the apply function for each entry in the uarray2 and 
+do the apply function in the order of one block by one block (block major).
+The block is 3 by 3 submap, and we read the block from left to right, and 
+top to bottom.
+
+
+We will use a 1-d array (uarray) to implement the 2-d array (uarray2). 
+In order to complete the implementation, we will convert the indices of 
+the 2-d uarray2 to the corresponding index in the 1-d uarray.  For example, 
+if there is an element in 2-d uarray which has indices i and j (i is the row 
+index and j is the column index). Through the converting function, the 
+corresponding index of this element in the 1-d uarray should be
+ i + j * width. 
+In the sudoku, for checking the same numbers, if checkRow, the value of 
+uarray which stores the counts of number appears, should be the number of j+1;
+for checkCol, should be i+1; for checkBlock, should be (j / 3)*3 + i/3 + 1.
+if not, there is error in sudoku, which means the sudoku is not solved.
+
+
+For bit2 array, we utilize the struct below to store the information of the
+bit2 array:
+struct Bit2_T {
+	int width;
+	int height;
+	Bit_T bit;
+}
+
+The most critical functions for bit2 array includes these functions below:
+Bit2_T Bit2_new (int width, int height):
+This function can be used to create a new 2-d bit array bit2 for future
+implementation.
+
+void Bit2_free (Bit2_T *bit2P):
+This function can free the memory allocated to the bit2 before.
+
+int Bit2_put (Bit2_T bit2, int i, int j, int n):
+This function will store the value of n into the entry (i, j) in the bit2 and
+return the previous value of that entry.
+
+int Bit2_get (Bit2_T bit2, int i, int j):
+This function will get the value of the entry (i, j) in the bit2.
+
+Void Bit2_map_row_major (Bit2_T bit2, void apply(int i, int j, Bit2_T bit2, int
+n, void *p), void *p):
+This function calls the apply function for each element in the bit2 and the
+column indices change faster than row indices (row major).
+
+Void Bit2_map_col_major (Bit2_T bit2, void apply(int i, int j, Bit2_T bit2, int
+n, void *p), void *p):
+This function calls the apply function for each element in the bit2 and the row
+indices change faster than column indices (column major).
+
+In the implementation, the bitmap will be store the value of pixels of the pbm
+image, width of the image, and the height of the image. The height and the 
+width will not be changed during the implementation. For the pixels stored in
+the bit2 array, the element representing the pixels which are not blackedges
+will also remained. During the loop for checking all the pixels at the edge, 
+all the pixels which has been checked will also not be changed any more.
+
+-----------------------------------------------------------------------------
+Time spent completing the assignment
+We spent nearly 30 hours for the whole assignment.

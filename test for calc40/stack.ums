@@ -1,0 +1,12 @@
+//		filename: stack.ums
+//			by Yucheng He & Griffin Richards
+//		Allocate the space for the call stack (in the data section) and 
+//		initializes the stack pointer (with code in the init section).
+
+.section init
+.zero r0
+r2 := endstack
+.section data
+.space 100000
+endstack:
+

@@ -1,0 +1,48 @@
+Name:                Jun Wang & Yucheng He
+Assignment number:   Homework 1
+Submit Date:         9/18/2015
+-----------------------------------------------------------------------------
+Part A: brightness
+        In brightness.c, we check the number of arguments at first, the number
+should be less than or equal to 1, else print an error and exit. In main
+function, we read the image and convert it to the data of all the pixels'
+brightness using Pnmrdr, then sum all these to get the total brightness 
+value.
+        In the calBrightness function, we use the sum, denominator and total 
+number of pixels to calculate the average brightness, and print it.
+-----------------------------------------------------------------------------
+Part B: readaline
+        In readaline.c, we use do-while loop to read characters one by one, 
+until read the newline character '\n'. If we read the EOF, that means the file 
+end, then we just free the ptr and return 0.
+        We use char **datap to transmit the string value back to the main 
+function, by reasign *datap = ptr. And return the length of the string.
+-----------------------------------------------------------------------------
+Part C: similines
+    In similines.c, we only contain main function to be used by client. 
+We use interface.c to store all the interface function.
+
+    We use Table to store all information of files as a key-value pairs. 
+The key of table is Atom, we use Atom because two same Atom has the same
+pointer, which means it is easy to find similines. The value of Table is
+Sequence. We use Sequence because it is easy to add new information at the 
+end of Sequence. In the Sequence, we use struct to store the location
+information, including filename and line number.
+
+    First, we convert the raw string to the modified string in which 
+there is only one space between two words. Then the modified string was
+stored in Atom use Atom_new. Also, we use Atom_length to get the length 
+of Atom.
+
+    We use Seq_seq to create a new Sequence, and put the location 
+information into the Sequence. If there is already has the sequence value, 
+we add the new location information at the end of sequence using Seq_addhi. 
+In print and free functions, we use Seq_length and Seq_get to get the 
+location pointer to free (use Seq_free) or to print.
+
+    In Table, we use Table_new to create Table, use Table_put to input 
+the key-value pair into Table, use Table_get to get the value with key, and 
+use Table_map to apply vfree and printGroupMatch functions to free the 
+pointer (Sequence and Location pointer) and print the group matching lines 
+information.
+

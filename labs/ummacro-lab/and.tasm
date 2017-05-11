@@ -1,0 +1,6 @@
+include com.tasm
+macro and
+
+nand rt,p2,p3           # rt is nand of p2 p3
+com p1,rt               # so com rt will get and of p2 and p3
+mend    

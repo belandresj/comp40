@@ -1,0 +1,32 @@
+
+
+include mov.tasm
+include com.tasm
+include neg.tasm
+include sub.tasm
+include and.tasm
+include or.tasm
+include writechar.tasm
+
+temp r6
+loadval r3,65                  # This is the letter A in ASCII
+loadval r5,67
+mov r3,r5
+writechar r3                   # Output the result of the add
+com r5,r5
+com r3,r5
+writechar r3
+neg r3,r3
+neg r3,r3
+writechar r3
+loadval r5,2
+sub r3,r3,r5
+writechar r3
+loadval r4,1
+neg r4,r4
+and r3,r3,r4
+writechar r3
+or r3,r3,r3
+writechar r3
+
+halt

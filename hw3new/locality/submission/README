@@ -1,0 +1,132 @@
+Name:                Jun Wang & Yucheng He
+Assignment number:   Homework 3
+Submit Date:         10/09/2015
+-----------------------------------------------------------------------------
+PART A:
+In part a, we use a uarray2 of uarray to repreasant the structure of uarray2b.
+Each block is a uarray and, we have a uarray2 to carray the array of blocks, 
+(which is carray the pointer pointing to uarray). For the padding, it will be 
+checked by maping function, and the indices we call will not cover the padding.
+We implement all the functions needed. We use the uarray2.c and uarray2.h by 
+our formal assignments.
+
+Part B
+For Part B, we write the source file of a2plain.c like a2blocked.c. The main
+differences between these two files are the map functions we implemented in
+a2plain.c were totally different with that in a2blocked.c, because they need
+different types of mapping methods(row major, column major for a2plain.c and
+block major for a2blocked.c). 
+
+Part C
+For Part C, we split our code into three different files. 
+The ppmtrans.c file contains the main function inluding the reading and
+exporting files, calling different rotation functions, etc. 
+The ppmtrans_helper.c file contains all the different types of the rotation
+functions like rotation0, rotation 90, etc.
+The ppmtrans_helper.h file contains the declaration of all rotation functions
+and the closure struct named a2fun_closure containg two objects: methods and 
+the new array2 for storing the new image's information.
+
+What we have implemented?
+We implemented the rotation for 0, 90, 180, 270 degrees and the result 
+indicates that the program works very well.
+
+What we didn't implement?
+We didn't implement the transformation for fliping or transposing the images.
+
+
+PART E:
+
+Our estimate:
+		row			col			block
+--------------------------------------------------------------------------
+180		2			5			4		
+--------------------------------------------------------------------------
+90		4			5			3
+
+For small image: 48*49
+		row		col		block
+--------------------------------------------------------------
+180		230702 ns	229038 ns	538309 ns		
+-------------------------------------------------------------
+90		212705 ns	206374 ns	525844 ns
+
+For mid image: 458*816
+		row		col		block
+----------------------------------------------------------
+180		37.85 ms	44.91 ms	77.52 ms				
+----------------------------------------------------------
+90		35.96 ms	39.55 ms	80.11 ms
+
+For small and mid image, there is no large different between row and col, which
+is quite different from what we estimate. I think this is because the image 
+size is smaller than the cache, so for three kinds of map functions, the 
+hit miss is quite low. So the algorithm will detemine the runtime. Based on 
+our estimate, the row and col have the same algorithm complexity, and block
+is much more complicated. So from the results for small and mid images, we can 
+find the runtime of row and col are similar and the block takes more time.
+Another factor of the result is, 180 rotation has 2 more multiply/divides than 
+90 rotation has. So this may be the reason why 90 rotation is faster than 180
+rotation. However block-180 is faster than block-90, we think it maybe the 
+systematic error of the timing program.
+
+For large image: 8160*6120
+		row		col		block
+--------------------------------------------------------------------
+180		4.91 s		6.15 s		10.73 s					
+-------------------------------------------------------------------
+90		5.13 s 		5.23 s		10.97 s
+
+First compare the effect of different rotaiton degree with the same mapping 
+function:
+For the large image, we find the result of rumtime of each rotation is quite
+similar to our estimate.
+The hit miss of block-map should be always the same for different rotaitons.
+Because the stride of different rotaion of block-map seems to be always the 
+same.
+For col-major, 180-rotation is more complicated than 90-rotation. And the 
+spatial locality of 180-rotation in col-major is worse than 90-rotaion. So the 
+results shows 180-col taks more time than 90-col.
+For row-major, the spatial locality is better in 180 rotation than 90 rotation,
+So the results showed that the runtime of 180-row is fater than 90-row.
+
+Then compare the effects of the mapping function with the same rotation degree:
+From the results, we found row-major has the best runtime while the block major 
+has the worst runtime. The reason we thought is because of the block-major has
+much more operations in mapping than row and col. while col-major has two more
+operations than row-major. So the difference between row and col are smaller 
+than the difference between col and block.
+
+Time for one cell (total runtime / # of cells) for small image
+		row		col		block
+--------------------------------------------------------------
+180		98.09 ns	97.38 ns	228.87 ns	
+--------------------------------------------------------------
+90		90.43 ns	87.74 ns	223.57 ns
+
+Time for one cell (total runtime / # of cells) for mid image
+		row		col		block
+----------------------------------------------------------
+180		101.29 ns	120.17 ns	207.43 ns	
+---------------------------------------------------------
+90		96.23 ns	105.84 ns	214.36 ns
+
+Time for one cell (total runtime / # of cells) for mid image
+		row		col		block
+------------------------------------------------------------
+180		98.23 ns	123.06 ns	214.79 ns	
+-------------------------------------------------------------
+90		102.74 ns	104.66 ns	219.73 ns
+
+We also get the runtime of each cell. We found that the cell runtime of small
+image is faster than mid image and large image, this is because the image size 
+of small image is less than the size of cache (assume 128K), So the hit miss
+rate is higher than mid image and large image.
+For the mid and large image, the cell runtime seems to be the same except the 
+runtime of row-major. This is maybe the systematic error for timing progam. Or
+this may because of the hit miss rate of large image is much higher than the 
+mid image. So for tha large image the spatial locality will denominate the 
+runtime, but for the mid image, the algorithm of 180-rotaion and 90-rotation
+denominate the runtime.
+
+

@@ -1,0 +1,24 @@
+//      test.ums
+//      used for testing
+
+.section init
+.zero r0
+.temp r6,r7
+
+.section text
+
+main:
+
+.section valstk
+        .space 100000
+        val_stk:
+
+.section text
+        r2 := endstack
+        r4 := 12345
+        push r4 on stack r2
+        goto print linking r1
+
+        r1 := 0
+        goto r5
+

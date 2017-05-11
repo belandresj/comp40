@@ -1,0 +1,7 @@
+
+macro mov
+
+nand p2,p2,p2           # make p2 be bitwise complement p2
+nand p1,p2,p2           # make p1 be bitwise complement of p2
+nand p2,p2,p2           # change p2 back to original p2
+mend    

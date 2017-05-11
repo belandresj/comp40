@@ -1,0 +1,311 @@
+//      filename: calc40.ums
+//              by Yucheng He & Griffin Richards
+//      Contains all the functions for calculator
+
+// r0 is always zero (points to segment 0, used for goto and for the call stack)
+// r1 is the return-address register and the result register and input
+// r2 is the stack offset (into segment 0, which is addressed by r0) call stack
+// r3 is the stack offset (into segment 0, which is addressed by r0) value stack
+// r4 is nonvolatile
+// r5 volatile register, helpful used for load return address and temp register
+// r6, r7 are volatile and are normally .temps (but up to each procedure)
+
+.section init
+.zero r0
+.temp r6,r7
+
+// allocate jumptable
+.section init
+	jumptable:
+	.space 256
+	// set r4 be the pointer to the beginning of jumptable 
+	r4 := jumptable
+// set all jumptable to input_error label with loop and return to next step 
+// in section init. use r4 as loop temp.
+set_up_jumptable:
+	if (r4 == jumptable + 256) goto set_end using r5
+	m[r0][r4] := input_error
+	r4 := r4 + 1
+	goto set_up_jumptable
+set_end:
+
+// set '0' to '9' in jumptable to label digit with loop and return to next
+// step in section init. use r4 as loop temp
+.section init
+	r4 := jumptable + '0'
+set_digits:
+	if (r4 >=s jumptable + '9') goto set_digits_end using r5
+	m[r0][r4] := digit
+	r4 := r4 + 1
+	goto set_digits
+set_digits_end:
+
+// digit label used for push the input number into the value stack.
+// if the there is no more digit input enter waiting state, otherwise
+// enter entering state
+.section text
+digit:
+	r4 := r1 - 48
+	push r4 on stack r3
+	goto entering
+entering:
+	r1 := input()
+	if (r1 <s '0') goto waiting_with_character using r5
+	if (r1 >s '9') goto waiting_with_character using r5
+	r4 := r1 - 48
+	pop r5 off stack r3
+	r5 := r5 * 10
+	r5 := r5 + r4
+	push r5 on stack r3
+	goto entering
+	
+// space: do nothing just enter waiting state
+.section init
+m[r0][jumptable + ' '] := waiting
+
+// newline: print contents of value stack using print function
+// return to waiting state. Value stack is not changed
+.section init
+m[r0][jumptable + '\n'] := newline
+
+.section text
+newline:
+	r4 := r3	// copy the value stack
+newline_loop:
+	if (r3 == end_val_stk) goto newline_end using r5
+	output ">>> "
+	pop r5 off stack r3
+	push r5 on stack r2
+	goto print linking r1
+	output '\n'
+	goto newline_loop
+newline_end:
+	r3 := r4
+	goto waiting
+
+// add +: get two values from value stack, add them and store
+// the new value on the stack then return to waiting state.
+// there must be at least two values on value stack 
+.section init
+m[r0][jumptable + '+'] := add
+
+.section text
+add:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	r4 := r4 + r5
+	push r4 on stack r3
+	goto waiting
+
+// minus -: get two values from value stack, subtract them and store
+// the new value on the stack then return to waiting state.
+// there must be at least two values on value stack 
+.section init
+m[r0][jumptable + '-'] := minus
+
+.section text
+minus:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	r4 := r5 - r4
+	push r4 on stack r3
+	goto waiting
+
+// mul *: get two values from value stack, multiply them and store
+// the new value on the stack then return to waiting state.
+// there must be at least two values on value stack 
+.section init
+m[r0][jumptable + '*'] := mul
+
+.section text
+mul:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	r4 := r4 * r5
+	push r4 on stack r3
+	goto waiting
+
+// division /: get two values from value stack, divide them and store
+// the new value on the stack then return to waiting state.
+// there must be at least two values on value stack, the divisor cannot 
+// be zero. Handled the signed division.
+.section init
+m[r0][jumptable + '/'] := div
+
+.section text
+div:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	if (r4 == 0) goto divisor_error
+	push r1 on stack r2	// save return address on stack
+	r1 := 0			// r1 used as temp to store # of negtive number
+	if (r4 >s 0) goto one_pos using r5
+	r1 := r1 + 1
+	r4 := - r4
+one_pos: // r4 should be positive
+	push r4 on stack r2
+	pop r5 off stack r3
+	if (r5 >=s 0) goto two_pos using r4 
+	r1 := r1 + 1
+	r5 := - r5
+two_pos:// r4 and r5 should be positive
+	pop r4 off stack r2
+	r4 := r5 / r4
+	// resign the r4 depends on # of negtive operands
+	if (r1 != 1) goto div_end using r5
+	r4 := -r4
+div_end:
+	push r4 on stack r3
+	pop r1 off stack r2	// restore r1 be return address
+	goto waiting
+
+
+// change sign c: get the value and store the inverse value on value stack
+// there must be at least one value on value stack
+.section init
+m[r0][jumptable + 'c'] := changeSign
+
+.section text
+changeSign:
+	if (r3 >s end_val_stk - 1) goto num_error_1 using r4
+	pop r4 off stack r3
+	r4 := - r4
+	push r4 on stack r3
+	goto waiting
+
+// swap s: swap top two values on value stack
+// must be at least two values on value stack
+.section init
+m[r0][jumptable + 's'] := swap
+
+.section text
+swap:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	push r4 on stack r3
+	push r5 on stack r3
+	goto waiting
+
+// duplicate d: get the top value and duplicate onto value stack
+// requires at least one value on value stack
+.section init
+m[r0][jumptable + 'd'] := duplicate
+
+.section text
+duplicate:
+	if (r3 >s end_val_stk - 1) goto num_error_1 using r4
+	pop r4 off stack r3
+	push r4 on stack r3
+	push r4 on stack r3
+	goto waiting
+
+// remove all z: remove all the values on value stack
+// does nothing for emtpy value stack. return waiting 
+.section init
+m[r0][jumptable + 'z'] := remove_all
+
+.section text
+remove_all:
+	if (r3 == end_val_stk) goto waiting using r4
+	pop stack r3
+	goto remove_all
+
+// complement ~: change the top value on stack to the bitwise complement
+.section init
+m[r0][jumptable + '~'] := comp
+
+.section text
+comp:
+	if (r3 >s end_val_stk - 1) goto num_error_1 using r4
+	pop r4 off stack r3
+	r4 := ~ r4
+	push r4 on stack r3
+	goto waiting
+
+// bitwise or |: get two top values on value stack and store the bitwise or
+// result of those two values. must be at least two values on value stack
+.section init
+m[r0][jumptable + '|'] := or
+
+.section text
+or:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	r4 := r4 | r5
+	push r4 on stack r3
+	goto waiting
+
+// bitwise and &: get two top values on value stack and store the bitwise or
+// result of those two values. must be at least two values on value stack
+.section init
+m[r0][jumptable + '&'] := and
+
+.section text
+and:
+	if (r3 >s end_val_stk - 2) goto num_error_2 using r4
+	pop r4 off stack r3
+	pop r5 off stack r3
+	r4 := r4 & r5
+	push r4 on stack r3
+	goto waiting
+.section init
+
+// pop p: remove the top value on value stack. need at least one value on 
+// value stack
+m[r0][jumptable + 'p'] := discard
+
+.section text
+discard:
+	if (r3 >s end_val_stk - 1) goto num_error_1 using r4
+	pop stack r3
+	goto waiting
+
+// all the error labels
+.section text
+divisor_error:	
+	output "can not divide by zero"
+	output '\n'
+	goto waiting
+
+// the error for all the operation need at least one operand
+num_error_1:
+	output "not enough values, need at least 1 value"
+	output '\n'
+	goto waiting
+	
+// the error for all the operation need at least two operands	
+num_error_2:
+	output "not enough values, need at least 2 values"
+	output '\n'
+	goto waiting	
+
+// invalid input
+input_error:
+	output "unknown character"
+	output '\n'
+	goto waiting
+
+// main function
+.section text
+main:
+	// allocate a value stack 
+	.space 10000
+	end_val_stk:
+	// get value stack pointer and call stack pointer
+	r3 := end_val_stk
+	r2 := endstack
+waiting:
+	r1 := input()
+waiting_with_character:
+	if (r1 != -1) goto goto_jumptable using r4	// -1 is EOF
+	halt
+        // branch indirect through jumptable
+goto_jumptable:
+        r5 := jumptable + r1
+	r5 := m[r0][r5]
+	goto r5

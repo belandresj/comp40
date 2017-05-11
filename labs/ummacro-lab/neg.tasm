@@ -1,0 +1,7 @@
+include com.tasm
+macro neg
+
+loadval rt,0
+com rt,rt               # get -1 in rt
+mult p1,p2,rt           # use mult to get -p2 by times -1
+mend    

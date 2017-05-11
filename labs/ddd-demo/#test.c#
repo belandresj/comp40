@@ -1,0 +1,8 @@
+
+
+
+struct three_unsigned_longs{
+	usigned long a, b, c;
+};
+
+void

@@ -1,0 +1,48 @@
+model name: Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+
+
+original:      
+midmark:  4.020         19,270,979,614
+sandmark: 100.011
+
+- Using 01
+midmark:  2.341         12,293,577,418
+sandmark: 58.104
+
+- Using 02
+midmark:  2.16          11,945,145,709
+sandmark: 54.237
+
+-change Seg_T from Seq_T to dynamic array
+midmark:  1.590         10,220,073,852
+sandmark: 39.703      
+
+-change Mem->segs from Seq_T to dynamic array
+midmark:  0.999         7,113,348,178
+sandmark: 24.885      
+
+-change not use bitpack
+midmark:  0.983         7,106,308,103 
+sandmark: 24.621
+
+-get rid of Seg_get, replace by inline functions.
+midmark:  0.878	        5,642,862,528
+sandmark: 21.991	
+
+--get rid of hanson stack replace by our version
+midmark:  0.832	        5,342,118,344 
+sandmark: 20.865
+
+--get rid of call loadSegment();
+midmark:  0.538	        3,744,107,220
+sandmark: 13.616
+
+-get rid of addinstr calls and seg_put calls
+midmark:  0.508         3,249,366,685
+sandmark: 12.763
+
+--get rid of call storeSegment();
+midmark:  0.463         2,957,582,857
+sandmark: 11.709 
+
+

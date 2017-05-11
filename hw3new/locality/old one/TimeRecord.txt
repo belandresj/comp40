@@ -1,0 +1,105 @@
+Mapping = -row-major, Rotation = 90, Time: 212705.000000 
+Number of pixels = 2352, average time per pixel = 90.435799 
+ 
+Mapping = -col-major, Rotation = 90, Time: 206374.000000 
+Number of pixels = 2352, average time per pixel = 87.744048 
+ 
+Mapping = -block-major, Rotation = 90, Time: 525844.000000 
+Number of pixels = 2352, average time per pixel = 223.573129 
+ 
+Mapping = -row-major, Rotation = 180, Time: 230702.000000 
+Number of pixels = 2352, average time per pixel = 98.087585 
+ 
+Mapping = -col-major, Rotation = 180, Time: 229038.000000 
+Number of pixels = 2352, average time per pixel = 97.380102 
+ 
+Mapping = -block-major, Rotation = 180, Time: 538309.000000 
+Number of pixels = 2352, average time per pixel = 228.872874 
+ 
+Mapping = -row-major, Rotation = 90, Time: 35964405.000000 
+Number of pixels = 373728, average time per pixel = 96.231497 
+ 
+Mapping = -col-major, Rotation = 90, Time: 39554946.000000 
+Number of pixels = 373728, average time per pixel = 105.838861 
+ 
+Mapping = -block-major, Rotation = 90, Time: 80111298.000000 
+Number of pixels = 373728, average time per pixel = 214.357228 
+ 
+Mapping = -row-major, Rotation = 180, Time: 37853173.000000 
+Number of pixels = 373728, average time per pixel = 101.285355 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44910104.000000 
+Number of pixels = 373728, average time per pixel = 120.167887 
+ 
+Mapping = -block-major, Rotation = 180, Time: 77523907.000000 
+Number of pixels = 373728, average time per pixel = 207.434035 
+ 
+Mapping = -row-major, Rotation = 90, Time: 5130933201.000000 
+Number of pixels = 49939200, average time per pixel = 102.743600 
+ 
+Mapping = -col-major, Rotation = 90, Time: 5226864593.000000 
+Number of pixels = 49939200, average time per pixel = 104.664564 
+ 
+Mapping = -block-major, Rotation = 90, Time: 10973017962.000000 
+Number of pixels = 49939200, average time per pixel = 219.727548 
+ 
+Mapping = -row-major, Rotation = 180, Time: 4905444310.000000 
+Number of pixels = 49939200, average time per pixel = 98.228332 
+ 
+Mapping = -col-major, Rotation = 180, Time: 6145616480.000000 
+Number of pixels = 49939200, average time per pixel = 123.061973 
+ 
+Mapping = -block-major, Rotation = 180, Time: 10726445897.000000 
+Number of pixels = 49939200, average time per pixel = 214.790103 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44411844.000000 
+Number of pixels = 373728, average time per pixel = 118.834671 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44917537.000000 
+Number of pixels = 373728, average time per pixel = 120.187776 
+ 
+Mapping = -col-major, Rotation = 180, Time: 45349812.000000 
+Number of pixels = 373728, average time per pixel = 121.344432 
+ 
+Mapping = -col-major, Rotation = 180, Time: 43796267.000000 
+Number of pixels = 373728, average time per pixel = 117.187545 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44208195.000000 
+Number of pixels = 373728, average time per pixel = 118.289759 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44670085.000000 
+Number of pixels = 373728, average time per pixel = 119.525658 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44454014.000000 
+Number of pixels = 373728, average time per pixel = 118.947507 
+ 
+Mapping = -col-major, Rotation = 180, Time: 46487459.000000 
+Number of pixels = 373728, average time per pixel = 124.388483 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44641971.000000 
+Number of pixels = 373728, average time per pixel = 119.450432 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44957948.000000 
+Number of pixels = 373728, average time per pixel = 120.295905 
+ 
+Mapping = -col-major, Rotation = 180, Time: 45854966.000000 
+Number of pixels = 373728, average time per pixel = 122.696094 
+ 
+Mapping = -col-major, Rotation = 180, Time: 44630160.000000 
+Number of pixels = 373728, average time per pixel = 119.418829 
+ 
+Mapping = -col-major, Rotation = 180, Time: 47923232.000000 
+Number of pixels = 373728, average time per pixel = 128.230242 
+ 
+Mapping = -row-major, Rotation = 90, Time: 16373130.000000 
+Number of pixels = 373728, average time per pixel = 43.810284 
+ 
+Mapping = -row-major, Rotation = 90, Time: 13130508.000000 
+Number of pixels = 373728, average time per pixel = 35.133862 
+ 
+Mapping = -row-major, Rotation = 90, Time: 1545774.000000 
+Number of pixels = 43512, average time per pixel = 35.525234 
+ 
+Mapping = -row-major, Rotation = 90, Time: 13038809.000000 
+Number of pixels = 373728, average time per pixel = 34.888499 
+ 

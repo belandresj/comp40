@@ -1,0 +1,11 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+int R[5] ={0};
+
+int main(int argc, char* argv[]) {
+	R[0] = 5;
+	
+	printf("%d\n", R[0]);
+	return 0;
+}

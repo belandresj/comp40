@@ -1,0 +1,6 @@
+include neg.tasm
+macro sub
+
+neg rt,p3               # get -p3 by neg
+add p1,p2,rt            # add p2 by -p3 
+mend    
